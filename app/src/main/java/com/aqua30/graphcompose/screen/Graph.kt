@@ -31,8 +31,6 @@ fun Graph(
   paddingSpace: Dp,
   verticalStep: Int,
 ) {
-  val controlPoints2 = mutableListOf<PointF>()
-  val coordinates = mutableListOf<PointF>()
   val density = LocalDensity.current
   val textPaint = remember(density) {
     Paint().apply {
@@ -41,7 +39,6 @@ fun Graph(
       textSize = density.run { 12.sp.toPx() }
     }
   }
-
   Box(
     modifier = modifier
       .background(Color.White)
@@ -53,9 +50,8 @@ fun Graph(
         .fillMaxSize()
         .background(color = Color.Gray),
     ) {
-      val xAxisSpace = (size.width - paddingSpace.toPx()) / xValues.size
-      val yAxisSpace = size.height / yValues.size
       /** placing x axis points */
+      val xAxisSpace = (size.width - paddingSpace.toPx()) / xValues.size
       for (i in xValues.indices) {
         drawContext.canvas.nativeCanvas.drawText(
           "${xValues[i]}",
@@ -65,6 +61,7 @@ fun Graph(
         )
       }
       /** placing y axis points */
+      val yAxisSpace = size.height / yValues.size
       for (i in yValues.indices) {
         drawContext.canvas.nativeCanvas.drawText(
           "${yValues[i]}",
@@ -74,6 +71,7 @@ fun Graph(
         )
       }
       /** placing points */
+      val coordinates = mutableListOf<PointF>()
       for (i in points.indices) {
         val x1 = xAxisSpace * xValues[i]
         val y1 = size.height - (yAxisSpace * (points[i] / verticalStep.toFloat()))
@@ -81,11 +79,12 @@ fun Graph(
           PointF(x1, y1)
         )
         /** drawing circles to indicate all the points */
-        drawCircle(color = Color.Red, radius = 10f, center = Offset(x1, y1))
+        drawCircle(color = Color.Blue, radius = 10f, center = Offset(x1, y1))
       }
 
       /** calculating the connection points */
       val controlPoints1 = mutableListOf<PointF>()
+      val controlPoints2 = mutableListOf<PointF>()
       for (i in 1 until coordinates.size) {
         controlPoints1.add(
           PointF(
@@ -113,6 +112,16 @@ fun Graph(
             coordinates[i + 1].y)
         }
       }
+      //curved
+      drawPath(
+        stroke,
+        color = Color.Black,
+        style = Stroke(
+          width = 5f, cap = StrokeCap.Square,
+          //Dotted Line
+          //pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+        )
+      )
 
       /** filling the area under the path */
       val fillPath: Path = android.graphics.Path(stroke.asAndroidPath()).asComposePath().apply {
@@ -121,23 +130,6 @@ fun Graph(
         close()
       }
 
-      val dottedStroke: Path = Path().apply {
-        reset()
-        moveTo(coordinates.first().x, coordinates.first().y)
-        for (i in 0 until coordinates.size - 1) {
-          lineTo(controlPoints1[i].x, controlPoints1[i].y)
-        }
-      }
-
-
-      /** filling the area under the path */
-      val fillPath2: Path = android.graphics.Path(dottedStroke.asAndroidPath())
-        .asComposePath().apply {
-          lineTo(xAxisSpace * xValues.last(), size.height - yAxisSpace + 100)
-          lineTo(xAxisSpace, size.height - yAxisSpace + 300)
-          close()
-        }
-
       drawPath(
         fillPath,
         brush = Brush.verticalGradient(
@@ -145,6 +137,22 @@ fun Graph(
           endY = size.height - yAxisSpace
         ),
       )
+
+      /** filling the area under the path */
+      val dottedPath: Path = Path().apply {
+        reset()
+        moveTo(coordinates.first().x, coordinates.first().y)
+        for (i in 0 until coordinates.size - 1) {
+          lineTo(controlPoints1[i].x, controlPoints1[i].y)
+        }
+      }
+
+      val fillPath2: Path = android.graphics.Path(dottedPath.asAndroidPath())
+        .asComposePath().apply {
+          lineTo(xAxisSpace * xValues.last(), size.height - yAxisSpace + 100)
+          lineTo(xAxisSpace, size.height - yAxisSpace + 300)
+          close()
+        }
       drawPath(
         fillPath2,
         brush = Brush.verticalGradient(
@@ -157,13 +165,8 @@ fun Graph(
         start = Offset(0f, 0f),
         end = Offset(size.width, 0f),
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+      )
 
-      )
-      drawPath(
-        stroke, color = Color.Black, style = Stroke(width = 5f, cap = StrokeCap.Square,
-          //curved
-          pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f))
-      )
     }
   }
 }
