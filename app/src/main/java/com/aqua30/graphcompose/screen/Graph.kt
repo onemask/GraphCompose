@@ -73,7 +73,7 @@ fun Graph(
           textPaint
         )
       }
-      /** placing our x axis points */
+      /** placing points */
       for (i in points.indices) {
         val x1 = xAxisSpace * xValues[i]
         val y1 = size.height - (yAxisSpace * (points[i] / verticalStep.toFloat()))
