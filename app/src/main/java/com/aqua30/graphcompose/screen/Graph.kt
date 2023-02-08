@@ -46,9 +46,7 @@ fun Graph(
     contentAlignment = Center
   ) {
     Canvas(
-      modifier = Modifier
-        .fillMaxSize()
-        .background(color = Color.Gray),
+      modifier = Modifier.fillMaxSize(),
     ) {
       /** placing x axis points */
       val xAxisSpace = (size.width - paddingSpace.toPx()) / xValues.size
@@ -138,33 +136,12 @@ fun Graph(
         ),
       )
 
-      /** filling the area under the path */
-      val dottedPath: Path = Path().apply {
-        reset()
-        moveTo(coordinates.first().x, coordinates.first().y)
-        for (i in 0 until coordinates.size - 1) {
-          lineTo(controlPoints1[i].x, controlPoints1[i].y)
-        }
-      }
-
-      val fillPath2: Path = android.graphics.Path(dottedPath.asAndroidPath())
-        .asComposePath().apply {
-          lineTo(xAxisSpace * xValues.last(), size.height - yAxisSpace + 100)
-          lineTo(xAxisSpace, size.height - yAxisSpace + 300)
-          close()
-        }
-      drawPath(
-        fillPath2,
-        brush = Brush.verticalGradient(
-          listOf(Color.Black, Color.Transparent),
-          endY = size.height - yAxisSpace
-        ),
-      )
       drawLine(
         color = Color.Red,
         start = Offset(0f, 0f),
         end = Offset(size.width, 0f),
-        pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+        strokeWidth = 10f,
+        pathEffect = PathEffect.dashPathEffect(floatArrayOf(30f, 30f), 30f)
       )
 
     }

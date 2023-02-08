@@ -16,36 +16,36 @@ import com.aqua30.graphcompose.ui.theme.GraphComposeTheme
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            GraphComposeTheme {
-                val yStep = 50
-                val random = Random
-                /* to test with random points */
-                val points = (0..9).map {
-                    var num = random.nextInt(350)
-                    if (num <= 50)
-                        num += 100
-                    num.toFloat()
-                }
-                /* to test with fixed points */
-//                val points = listOf(150f,100f,250f,200f,330f,300f,90f,120f,285f,199f),
-                Box(
-                    modifier = Modifier.fillMaxSize().background(Color.DarkGray)
-                ) {
-                    Graph(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(500.dp),
-                        xValues = (0..9).map { it + 1 },
-                        yValues = (0..6).map { (it + 1) * yStep },
-                        points = points,
-                        paddingSpace = 16.dp,
-                        verticalStep = yStep
-                    )
-                }
-            }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      GraphComposeTheme {
+        val yStep = 50
+        val random = Random
+        /* to test with random points */
+        val points = (0..9).map {
+          var num = random.nextInt(350)
+          if (num <= 50)
+            num += 100
+          num.toFloat()
         }
+        /* to test with fixed points */
+//                val points = listOf(150f,100f,250f,200f,330f,300f,90f,120f,285f,199f),
+        Box(
+          modifier = Modifier.fillMaxSize()
+        ) {
+          Graph(
+            modifier = Modifier
+              .fillMaxWidth()
+              .height(500.dp),
+            xValues = (0..9).map { it + 1 },
+            yValues = (0..6).map { (it + 1) * yStep },
+            points = points,
+            paddingSpace = 16.dp,
+            verticalStep = yStep
+          )
+        }
+      }
     }
+  }
 }
